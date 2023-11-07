@@ -1,6 +1,5 @@
 {
     "name": "404 Template",
-    "wrapper": "div#404_template.404_div",
     "sections": {
         "template": {
             "type": "template-404"
