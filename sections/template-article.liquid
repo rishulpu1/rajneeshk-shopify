@@ -1,19 +1,19 @@
-<article class="py-8">
+<article class="py-8" itemscope itemtype="http://schema.org/BlogPosting">
     {% for block in section.blocks %}
         {% case block.type %}
             {% when 'article_title' %}
                 <div class="flex items-center justify-center">
                     <div class="max-w-7xl text-center">
                         <a href="{{ blog.url }}" class="text-base uppercase text-gray-500 hover:text-gray-900 font-bold">{{ blog.title }}</a>
-                        <h1 class="text-4xl md:text-6xl font-medium"></h1>
+                        <h1 class="text-4xl md:text-6xl font-medium" itemprop="headline"></h1>
                     </div>
                 </div>
                 
             {% when 'article_author' %}
                 <div class="flex items-center justify-center">
-                    <div class="max-w-7xl text-center">
+                    <div class="max-w-7xl text-center" itemscope itemtype="http://schema.org/Person">
                         {% if section.settings.enable_author %}
-                            <small>{{ article.author }}</small>   
+                            <small itemprop="author">{{ article.author }}</small>   
                         {% endif %}
                     </div>
                 </div>
@@ -22,12 +22,12 @@
                 <div class="flex items-center justify-center">
                     <div class="max-w-7xl text-center">
                         {% if section.settings.enable_published_date %}
-                            <time datetime="{{ article.published_at |  date: format:'on_date' }}">{{ article.published_at |  date: '%Y-%m-%d' }}</time>
+                            <time itemprop="datePublished dateCreated" datetime="{{ article.published_at |  date: format:'on_date' }}">{{ article.published_at |  date: '%Y-%m-%d' }}</time>
                         {% endif %}
                     </div>
                 </div>
             {% when 'featured_image' %}
-                <div class="max-w-7xl bg-blue-100 mx-2 md:mx-auto overflow-hidden rounded-lg my-4">
+                <div itemprop="image" class="max-w-7xl bg-blue-100 mx-2 md:mx-auto overflow-hidden rounded-lg my-4">
                     {% if article.image != blank %}
                         <img class="w-full h-80 md:h-96 object-cover object-center p-5" src="{{ article.image | img_url: "large" }}" alt="{{ article.image.alt }}">
                         {% else %}
@@ -38,7 +38,7 @@
                 
             {% when 'article_content' %}
                 <div class="flex items-center justify-center">
-                    <div class="max-w-7xl">{{ article.content }}</div>
+                    <div itemprop="articleBody" class="max-w-7xl">{{ article.content }}</div>
                 </div>
             {% else %}
                 
@@ -50,7 +50,21 @@
 {% if blog.comments_enabled? %}
     <div id="comments" class="my-8">
         {% if article.comments_count > 0 %}
-            
+            <div class="flex-1 items-center justify-center max-w-4xl mx-auto px-4">
+                <h1 class="text-lg mb-4 font-medium">See what people are saying</h1>
+                {% paginate article.comments by 12 %}
+                    {% for comment in article.comments %}
+                        <div class="flex-1 border my-4 px-4 py-2 sm:px-6 sm:py-4 leading-relaxed">
+                            <span class="comment-author">{{ comment.author }}</span>
+                            <span class="text-xs text-gray-400">{{ comment.created_at |  date: format: 'default' }}</span>
+                            <p class="text-small">{{ comment.content }}</p>
+                        </div>
+                    {% endfor %}
+                    {% if paginate.pages > 1 %}
+                        {{ paginate |  default_pagination }}
+                    {% endif %}
+                {% endpaginate %}
+            </div>
             {% else %}
                 There are no comments in this article
         {% endif %}
